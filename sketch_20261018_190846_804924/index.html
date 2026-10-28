@@ -90,8 +90,11 @@ h1 { margin: 2px 0 0; font-size: 26px; font-weight: 600; line-height: 1.1; text-
 .sheets img { width: 100%; aspect-ratio: 420 / 297; object-fit: cover; background: var(--sheet); border: 1px solid var(--line); border-radius: 3px; }
 .sheets b { font: 500 12px var(--mono); color: var(--accent); }
 .sheets small { font-size: 13px; line-height: 1.2; color: var(--muted); }
-.pdfs { display: flex; flex-direction: column; gap: 6px; }
-.pdfs a { font-size: 15px; color: var(--accent); }
+.set { display: flex; flex-direction: column; gap: 8px; }
+.set + .set { margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--line); }
+.set h3 { margin: 0; font-size: 16px; font-weight: 600; letter-spacing: 0.02em; }
+.set .doc { font: 400 12px var(--mono); color: var(--muted); overflow-wrap: anywhere; }
+.set a { font-size: 14px; color: var(--accent); }
 dl.kv { display: grid; grid-template-columns: 1fr auto; gap: 5px 12px; margin: 0; font-size: 15px; }
 dl.kv dt { color: var(--muted); }
 dl.kv dd { margin: 0; font-family: var(--mono); font-size: 13px; text-align: right; font-variant-numeric: tabular-nums; }
@@ -186,8 +189,7 @@ button:focus-visible, input:focus-visible, a:focus-visible { outline: 2px solid 
   </section>
 
   <section class="tab" id="p-drawings" role="tabpanel" aria-labelledby="tab-drawings" hidden>
-    <div class="sheets" id="sheets"></div>
-    <div class="pdfs" id="pdfs"></div>
+    <div id="sets"></div>
   </section>
 
   <section class="tab" id="p-project" role="tabpanel" aria-labelledby="tab-project" hidden>
@@ -226,7 +228,7 @@ import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 import { CSS2DRenderer, CSS2DObject } from "three/addons/renderers/CSS2DRenderer.js";
 
-const DATA = {"stem": "sketch_20261018_190846_804924", "name": "STUDIO APARTMENT 101", "date": "2026-10-18", "rooms": [{"name": "OUTSIDE DECK", "area": 18.0, "x": 4.5, "y": 11.0}, {"name": "PASSAGE", "area": 3.0, "x": 0.75, "y": 9.0}, {"name": "TOILET & DRESSER", "area": 7.0, "x": 3.25, "y": 9.0}, {"name": "KITCHEN", "area": 15.0, "x": 2.5, "y": 6.5}, {"name": "LIVING AND DRAWING ROOM", "area": 40.0, "x": 7.0, "y": 5.0}], "bounds": [-0.11430000000000001, -0.11430000000000001, 9.1143, 12.1143], "ffl": 0.0, "grade": -0.45, "top": 3.5, "envelope": [9.23, 12.23], "floor_area": 83.0, "stats": [["Built-up area", "112.9 m\u00b2"], ["Room areas (total)", "83.0 m\u00b2"], ["Envelope", "9.23 \u00d7 12.23 m"], ["Rooms", "5"], ["Doors / windows", "5 / 2"], ["RCC columns", "0"], ["Floor to ceiling", "2.75 m"], ["Height above ground", "3.95 m"]], "status": [["Concept design", "S2 \u00b7 rev P01"], ["Technical design", "S2 \u00b7 rev P01"]], "glb_url": "model.glb", "sets": [{"label": "Concept design", "href": "SA1-S2M-ZZ-ZZ-DR-A-0002_Concept-Design.pdf"}, {"label": "Technical design", "href": "SA1-S2M-ZZ-ZZ-DR-A-0004_Technical-Design.pdf"}], "sheets": [{"no": "A-1.1", "title": "GROUND FLOOR PLAN", "src": "sheets/A-1.1.png", "pdf": "SA1-S2M-ZZ-ZZ-DR-A-0002_Concept-Design.pdf"}, {"no": "A-3.1", "title": "ELEVATIONS", "src": "sheets/A-3.1.png", "pdf": "SA1-S2M-ZZ-ZZ-DR-A-0002_Concept-Design.pdf"}, {"no": "A-101", "title": "GROUND FLOOR PLAN", "src": "sheets/A-101.png", "pdf": "SA1-S2M-ZZ-ZZ-DR-A-0004_Technical-Design.pdf"}, {"no": "A-201", "title": "SOUTH AND NORTH ELEVATIONS", "src": "sheets/A-201.png", "pdf": "SA1-S2M-ZZ-ZZ-DR-A-0004_Technical-Design.pdf"}, {"no": "A-202", "title": "EAST AND WEST ELEVATIONS", "src": "sheets/A-202.png", "pdf": "SA1-S2M-ZZ-ZZ-DR-A-0004_Technical-Design.pdf"}, {"no": "A-301", "title": "SECTION A-A", "src": "sheets/A-301.png", "pdf": "SA1-S2M-ZZ-ZZ-DR-A-0004_Technical-Design.pdf"}]};
+const DATA = {"stem": "sketch_20261018_190846_804924", "name": "STUDIO APARTMENT 101", "date": "2026-10-18", "rooms": [{"name": "OUTSIDE DECK", "area": 18.0, "x": 4.5, "y": 11.0}, {"name": "PASSAGE", "area": 3.0, "x": 0.75, "y": 9.0}, {"name": "TOILET & DRESSER", "area": 7.0, "x": 3.25, "y": 9.0}, {"name": "KITCHEN", "area": 15.0, "x": 2.5, "y": 6.5}, {"name": "LIVING AND DRAWING ROOM", "area": 40.0, "x": 7.0, "y": 5.0}], "bounds": [-0.11430000000000001, -0.11430000000000001, 9.1143, 12.1143], "ffl": 0.0, "grade": -0.45, "top": 3.5, "envelope": [9.23, 12.23], "floor_area": 83.0, "stats": [["Built-up area", "112.9 m\u00b2"], ["Room areas (total)", "83.0 m\u00b2"], ["Envelope", "9.23 \u00d7 12.23 m"], ["Rooms", "5"], ["Doors / windows", "6 / 2"], ["RCC columns", "0"], ["Floor to ceiling", "2.75 m"], ["Height above ground", "3.95 m"]], "status": [["Concept Design", "S2 \u00b7 rev P01"], ["Technical Design", "S2 \u00b7 rev P01"]], "glb_url": "model.glb", "sets": [{"label": "Concept Design", "number": "SA1-S2M-ZZ-ZZ-DR-A-0002", "href": "SA1-S2M-ZZ-ZZ-DR-A-0002_Concept-Design.pdf", "sheets": [{"no": "A-1.1", "title": "GROUND FLOOR PLAN", "src": "sheets/A-1.1.png", "pdf": "SA1-S2M-ZZ-ZZ-DR-A-0002_Concept-Design.pdf"}, {"no": "A-3.1", "title": "ELEVATIONS", "src": "sheets/A-3.1.png", "pdf": "SA1-S2M-ZZ-ZZ-DR-A-0002_Concept-Design.pdf"}, {"no": "A-7.1", "title": "FURNITURE MOOD", "src": "sheets/A-7.1.png", "pdf": "SA1-S2M-ZZ-ZZ-DR-A-0002_Concept-Design.pdf"}]}, {"label": "Technical Design", "number": "SA1-S2M-ZZ-ZZ-DR-A-0004", "href": "SA1-S2M-ZZ-ZZ-DR-A-0004_Technical-Design.pdf", "sheets": [{"no": "A-101", "title": "GROUND FLOOR PLAN", "src": "sheets/A-101.png", "pdf": "SA1-S2M-ZZ-ZZ-DR-A-0004_Technical-Design.pdf"}, {"no": "A-201", "title": "SOUTH AND NORTH ELEVATIONS", "src": "sheets/A-201.png", "pdf": "SA1-S2M-ZZ-ZZ-DR-A-0004_Technical-Design.pdf"}, {"no": "A-202", "title": "EAST AND WEST ELEVATIONS", "src": "sheets/A-202.png", "pdf": "SA1-S2M-ZZ-ZZ-DR-A-0004_Technical-Design.pdf"}, {"no": "A-301", "title": "SECTION A-A", "src": "sheets/A-301.png", "pdf": "SA1-S2M-ZZ-ZZ-DR-A-0004_Technical-Design.pdf"}]}]};
 const GLB = "";            // base64 in the single file; "" when DATA.glb_url
 
 const [bx1, by1, bx2, by2] = DATA.bounds;
@@ -286,8 +288,23 @@ vImg.addEventListener("click", e => {
     });
   }
 });
-const grid = document.getElementById("sheets");
-DATA.sheets.forEach(s => {
+const setsEl = document.getElementById("sets");
+DATA.sets.forEach(set => {
+  // one group per issued set: name, ISO 19650 document number, sheet count, PDF
+  const g = document.createElement("div"); g.className = "set";
+  const h = document.createElement("h3"); h.textContent = `${set.label} set`;
+  const doc = document.createElement("span"); doc.className = "doc";
+  doc.textContent = `${set.number} · ${set.sheets.length} sheet${set.sheets.length === 1 ? "" : "s"}`;
+  g.append(h, doc);
+  if (set.href) {
+    const a = document.createElement("a");
+    a.href = set.href; a.target = "_blank"; a.rel = "noopener";
+    a.textContent = "Open the set (PDF)";
+    g.append(a);
+  }
+  const grid = document.createElement("div"); grid.className = "sheets";
+  g.append(grid); setsEl.append(g);
+  set.sheets.forEach(s => {
   const btn = document.createElement("button");
   const img = document.createElement("img"); img.src = s.src; img.alt = ""; img.loading = "lazy";
   const no = document.createElement("b"); no.textContent = s.no;
@@ -296,12 +313,7 @@ DATA.sheets.forEach(s => {
   btn.setAttribute("aria-label", `Open ${s.no} ${s.title}`);
   btn.addEventListener("click", () => openSheet(s, btn));
   grid.append(btn);
-});
-DATA.sets.forEach(p => {
-  const a = document.createElement("a");
-  a.href = p.href; a.target = "_blank"; a.rel = "noopener";
-  a.textContent = `${p.label} set (PDF)`;
-  document.getElementById("pdfs").append(a);
+  });
 });
 
 // --- scene: white studio ---------------------------------------------------
